@@ -7,6 +7,7 @@ import { DatabaseManager } from '../database/DatabaseManager.js';
 import { UpdateDataSchema, QueryResultSchema } from '../types/schemas.js';
 import type { UpdateDataInput, QueryResultOutput } from '../types/schemas.js';
 import type { ToolDefinition, ToolResult } from '../types/index.js';
+import { zodToJsonSchema } from '../utils/schemaConverter.js';
 
 /**
  * 데이터 업데이트 도구 정의
@@ -14,8 +15,8 @@ import type { ToolDefinition, ToolResult } from '../types/index.js';
 export const updateDataTool: ToolDefinition = {
   name: 'update_data',
   description: 'SQLite 테이블의 기존 데이터를 업데이트합니다',
-  inputSchema: UpdateDataSchema,
-  outputSchema: QueryResultSchema,
+  inputSchema: zodToJsonSchema(UpdateDataSchema),
+  outputSchema: zodToJsonSchema(QueryResultSchema),
   handler: updateDataHandler
 };
 

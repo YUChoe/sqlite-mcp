@@ -4,14 +4,15 @@
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
 import { CreateTableSchema, QueryResultSchema } from '../types/schemas.js';
+import { zodToJsonSchema } from '../utils/schemaConverter.js';
 /**
  * 테이블 생성 도구 정의
  */
 export const createTableTool = {
     name: 'create_table',
     description: '새로운 SQLite 테이블을 생성합니다',
-    inputSchema: CreateTableSchema,
-    outputSchema: QueryResultSchema,
+    inputSchema: zodToJsonSchema(CreateTableSchema),
+    outputSchema: zodToJsonSchema(QueryResultSchema),
     handler: createTableHandler
 };
 /**

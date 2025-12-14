@@ -7,6 +7,7 @@ import { DatabaseManager } from '../database/DatabaseManager.js';
 import { CreateTableSchema, QueryResultSchema } from '../types/schemas.js';
 import type { CreateTableInput, QueryResultOutput } from '../types/schemas.js';
 import type { ToolDefinition, ToolResult } from '../types/index.js';
+import { zodToJsonSchema } from '../utils/schemaConverter.js';
 
 /**
  * 테이블 생성 도구 정의
@@ -14,8 +15,8 @@ import type { ToolDefinition, ToolResult } from '../types/index.js';
 export const createTableTool: ToolDefinition = {
   name: 'create_table',
   description: '새로운 SQLite 테이블을 생성합니다',
-  inputSchema: CreateTableSchema,
-  outputSchema: QueryResultSchema,
+  inputSchema: zodToJsonSchema(CreateTableSchema),
+  outputSchema: zodToJsonSchema(QueryResultSchema),
   handler: createTableHandler
 };
 

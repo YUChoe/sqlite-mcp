@@ -7,6 +7,7 @@ import { DatabaseManager } from '../database/DatabaseManager.js';
 import { InsertDataSchema, QueryResultSchema } from '../types/schemas.js';
 import type { InsertDataInput, QueryResultOutput } from '../types/schemas.js';
 import type { ToolDefinition, ToolResult } from '../types/index.js';
+import { zodToJsonSchema } from '../utils/schemaConverter.js';
 
 /**
  * 데이터 삽입 도구 정의
@@ -14,8 +15,8 @@ import type { ToolDefinition, ToolResult } from '../types/index.js';
 export const insertDataTool: ToolDefinition = {
   name: 'insert_data',
   description: 'SQLite 테이블에 새로운 데이터를 삽입합니다',
-  inputSchema: InsertDataSchema,
-  outputSchema: QueryResultSchema,
+  inputSchema: zodToJsonSchema(InsertDataSchema),
+  outputSchema: zodToJsonSchema(QueryResultSchema),
   handler: insertDataHandler
 };
 

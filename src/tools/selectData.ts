@@ -7,6 +7,7 @@ import { DatabaseManager } from '../database/DatabaseManager.js';
 import { SelectDataSchema, QueryResultSchema } from '../types/schemas.js';
 import type { SelectDataInput, QueryResultOutput } from '../types/schemas.js';
 import type { ToolDefinition, ToolResult } from '../types/index.js';
+import { zodToJsonSchema } from '../utils/schemaConverter.js';
 
 /**
  * SELECT 쿼리 실행 도구
@@ -14,8 +15,8 @@ import type { ToolDefinition, ToolResult } from '../types/index.js';
 export const selectDataTool: ToolDefinition = {
   name: 'select_data',
   description: 'SQLite 데이터베이스에서 SELECT 쿼리를 실행하여 데이터를 조회합니다. WHERE 절을 포함한 복잡한 쿼리를 지원합니다.',
-  inputSchema: SelectDataSchema,
-  outputSchema: QueryResultSchema,
+  inputSchema: zodToJsonSchema(SelectDataSchema),
+  outputSchema: zodToJsonSchema(QueryResultSchema),
   handler: selectDataHandler
 };
 

@@ -4,14 +4,15 @@
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
 import { MetaCommandSchema, MetaResultSchema } from '../types/schemas.js';
+import { zodToJsonSchema } from '../utils/schemaConverter.js';
 /**
  * SQLite 메타 명령 도구
  */
 export const metaCommandsTool = {
     name: 'meta_commands',
     description: 'SQLite 메타 명령(.tables, .schema, .indexes, .pragma)을 실행하여 데이터베이스 구조 정보를 조회합니다.',
-    inputSchema: MetaCommandSchema,
-    outputSchema: MetaResultSchema,
+    inputSchema: zodToJsonSchema(MetaCommandSchema),
+    outputSchema: zodToJsonSchema(MetaResultSchema),
     handler: metaCommandsHandler
 };
 /**

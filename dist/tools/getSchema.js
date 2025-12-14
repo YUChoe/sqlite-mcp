@@ -4,14 +4,15 @@
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
 import { GetSchemaSchema, SchemaResultSchema } from '../types/schemas.js';
+import { zodToJsonSchema } from '../utils/schemaConverter.js';
 /**
  * 스키마 정보 조회 도구
  */
 export const getSchemaTool = {
     name: 'get_schema',
     description: 'SQLite 데이터베이스의 테이블 목록과 스키마 정보를 조회합니다. 특정 테이블을 지정하면 해당 테이블의 상세 정보를 반환합니다.',
-    inputSchema: GetSchemaSchema,
-    outputSchema: SchemaResultSchema,
+    inputSchema: zodToJsonSchema(GetSchemaSchema),
+    outputSchema: zodToJsonSchema(SchemaResultSchema),
     handler: getSchemaHandler
 };
 /**

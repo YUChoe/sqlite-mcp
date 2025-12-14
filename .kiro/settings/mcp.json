@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "sqlite-mcp-local": {
+      "command": "node",
+      "args": ["C:/Users/yonguk.choe/src/sqlite-mcp/dist/index.js"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

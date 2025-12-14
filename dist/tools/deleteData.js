@@ -4,14 +4,15 @@
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
 import { DeleteDataSchema, QueryResultSchema } from '../types/schemas.js';
+import { zodToJsonSchema } from '../utils/schemaConverter.js';
 /**
  * 데이터 삭제 도구 정의
  */
 export const deleteDataTool = {
     name: 'delete_data',
     description: 'SQLite 테이블에서 데이터를 삭제합니다. 조건부 삭제와 전체 삭제를 지원합니다.',
-    inputSchema: DeleteDataSchema,
-    outputSchema: QueryResultSchema,
+    inputSchema: zodToJsonSchema(DeleteDataSchema),
+    outputSchema: zodToJsonSchema(QueryResultSchema),
     handler: deleteDataHandler
 };
 /**
