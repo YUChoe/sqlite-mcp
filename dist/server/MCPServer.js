@@ -6,7 +6,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema, InitializeRequestSchema, InitializedNotificationSchema } from '@modelcontextprotocol/sdk/types.js';
 // 도구 임포트
-import { createTableTool, insertDataTool, selectDataTool, getSchemaTool, updateDataTool, deleteDataTool, metaCommandsTool } from '../tools/index.js';
+import { createTableTool, insertDataTool, selectDataTool, getSchemaTool, updateDataTool, deleteDataTool, metaCommandTool } from '../tools/index.js';
 // 오류 처리 임포트
 import { ErrorHandler } from './ErrorHandler.js';
 /**
@@ -54,7 +54,7 @@ export class SQLiteMCPServer {
                     getSchemaTool,
                     updateDataTool,
                     deleteDataTool,
-                    metaCommandsTool
+                    metaCommandTool
                 ]
             };
         });

@@ -65,7 +65,7 @@ async function getAllTables(dbManager, dbPath) {
         AND name NOT LIKE 'sqlite_%'
       ORDER BY name
     `;
-        const queryResult = dbManager.executeQuery(dbPath, query);
+        const queryResult = await dbManager.executeQuery(dbPath, query);
         if (!queryResult.success) {
             return {
                 success: false,
@@ -98,7 +98,7 @@ async function getTableSchema(dbManager, dbPath, tableName) {
         AND name = ?
         AND name NOT LIKE 'sqlite_%'
     `;
-        const tableExistsResult = dbManager.executeQuery(dbPath, tableExistsQuery, [tableName]);
+        const tableExistsResult = await dbManager.executeQuery(dbPath, tableExistsQuery, [tableName]);
         if (!tableExistsResult.success) {
             return {
                 success: false,
@@ -113,7 +113,7 @@ async function getTableSchema(dbManager, dbPath, tableName) {
         }
         // 테이블 스키마 정보 조회 (PRAGMA table_info 사용)
         const schemaQuery = `PRAGMA table_info(${tableName})`;
-        const schemaResult = dbManager.executeQuery(dbPath, schemaQuery);
+        const schemaResult = await dbManager.executeQuery(dbPath, schemaQuery);
         if (!schemaResult.success) {
             return {
                 success: false,
@@ -127,7 +127,7 @@ async function getTableSchema(dbManager, dbPath, tableName) {
       WHERE type = 'table'
         AND name = ?
     `;
-        const ddlResult = dbManager.executeQuery(dbPath, ddlQuery, [tableName]);
+        const ddlResult = await dbManager.executeQuery(dbPath, ddlQuery, [tableName]);
         const ddlSchema = ddlResult.success && ddlResult.data?.[0]?.sql || '';
         // 컬럼 정보 변환
         const columns = schemaResult.data?.map(row => ({

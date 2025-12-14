@@ -34,7 +34,7 @@ async function insertDataHandler(params: InsertDataInput): Promise<ToolResult> {
     const { sql, values } = generateInsertSQL(validatedInput);
 
     // SQL 실행
-    const result = dbManager.executeQuery(validatedInput.dbPath, sql, values);
+    const result = await dbManager.executeQuery(validatedInput.dbPath, sql, values);
 
     const output: QueryResultOutput = {
       success: result.success,

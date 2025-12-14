@@ -7,7 +7,7 @@ export { selectDataTool } from './selectData.js';
 export { getSchemaTool } from './getSchema.js';
 export { updateDataTool } from './updateData.js';
 export { deleteDataTool } from './deleteData.js';
-export { metaCommandsTool } from './metaCommands.js';
+export { metaCommandTool } from './metaCommands.js';
 export declare const createTools: import("../types/index.js").ToolDefinition[];
 export declare const readTools: import("../types/index.js").ToolDefinition[];
 export declare const updateTools: import("../types/index.js").ToolDefinition[];

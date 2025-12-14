@@ -34,7 +34,7 @@ async function deleteDataHandler(params: DeleteDataInput): Promise<ToolResult> {
     validateDeleteQuery(validatedInput.query);
 
     // SQL 실행
-    const result = dbManager.executeQuery(
+    const result = await dbManager.executeQuery(
       validatedInput.dbPath,
       validatedInput.query,
       validatedInput.params

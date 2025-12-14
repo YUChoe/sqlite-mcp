@@ -12,7 +12,7 @@ import { updateDataTool } from './updateData.js';
 // Delete 작업 도구
 import { deleteDataTool } from './deleteData.js';
 // Meta 명령 도구
-import { metaCommandsTool } from './metaCommands.js';
+import { metaCommandTool } from './metaCommands.js';
 // 개별 도구 export
 export { createTableTool } from './createTable.js';
 export { insertDataTool } from './insertData.js';
@@ -20,7 +20,7 @@ export { selectDataTool } from './selectData.js';
 export { getSchemaTool } from './getSchema.js';
 export { updateDataTool } from './updateData.js';
 export { deleteDataTool } from './deleteData.js';
-export { metaCommandsTool } from './metaCommands.js';
+export { metaCommandTool } from './metaCommands.js';
 // 모든 Create 도구를 배열로 내보내기
 export const createTools = [
     createTableTool,
@@ -41,6 +41,6 @@ export const deleteTools = [
 ];
 // 모든 Meta 명령 도구를 배열로 내보내기
 export const metaTools = [
-    metaCommandsTool
+    metaCommandTool
 ];
 //# sourceMappingURL=index.js.map

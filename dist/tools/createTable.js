@@ -26,7 +26,7 @@ async function createTableHandler(params) {
         // CREATE TABLE SQL 생성
         const sql = generateCreateTableSQL(validatedInput);
         // SQL 실행
-        const result = dbManager.executeQuery(validatedInput.dbPath, sql);
+        const result = await dbManager.executeQuery(validatedInput.dbPath, sql);
         const output = {
             success: result.success,
             rowsAffected: result.rowsAffected,

@@ -26,7 +26,7 @@ async function deleteDataHandler(params) {
         // DELETE 쿼리 검증
         validateDeleteQuery(validatedInput.query);
         // SQL 실행
-        const result = dbManager.executeQuery(validatedInput.dbPath, validatedInput.query, validatedInput.params);
+        const result = await dbManager.executeQuery(validatedInput.dbPath, validatedInput.query, validatedInput.params);
         const output = {
             success: result.success,
             rowsAffected: result.rowsAffected,

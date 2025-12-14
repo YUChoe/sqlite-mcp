@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod';
-import type { Database as BetterSQLite3Database } from 'better-sqlite3';
+import type { Database as SQLite3Database } from 'sqlite3';
 
 // ============================================================================
 // Database Manager 관련 타입
@@ -15,8 +15,8 @@ import type { Database as BetterSQLite3Database } from 'better-sqlite3';
 export interface Database {
   /** 데이터베이스 파일 경로 */
   path: string;
-  /** better-sqlite3 데이터베이스 연결 */
-  connection: BetterSQLite3Database;
+  /** sqlite3 데이터베이스 연결 */
+  connection: SQLite3Database;
   /** 마지막 접근 시간 */
   lastAccessed: Date;
 }
@@ -32,9 +32,9 @@ export interface DatabaseManager {
   /** 모든 데이터베이스 연결 닫기 */
   closeAllDatabases(): void;
   /** SQL 쿼리 실행 */
-  executeQuery(path: string, sql: string, params?: any[]): QueryResult;
+  executeQuery(path: string, sql: string, params?: any[]): Promise<QueryResult>;
   /** 트랜잭션 실행 */
-  executeTransaction(path: string, operations: Operation[]): TransactionResult;
+  executeTransaction(path: string, operations: Operation[]): Promise<TransactionResult>;
 }
 
 // ============================================================================

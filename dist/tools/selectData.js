@@ -38,7 +38,7 @@ async function selectDataHandler(params) {
         // 데이터베이스 매니저 인스턴스 생성
         const dbManager = new DatabaseManager();
         // 쿼리 실행
-        const queryResult = dbManager.executeQuery(dbPath, query, queryParams);
+        const queryResult = await dbManager.executeQuery(dbPath, query, queryParams);
         // 결과 검증 및 반환
         const result = QueryResultSchema.parse(queryResult);
         return {

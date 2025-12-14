@@ -34,7 +34,7 @@ async function createTableHandler(params: CreateTableInput): Promise<ToolResult>
     const sql = generateCreateTableSQL(validatedInput);
 
     // SQL 실행
-    const result = dbManager.executeQuery(validatedInput.dbPath, sql);
+    const result = await dbManager.executeQuery(validatedInput.dbPath, sql);
 
     const output: QueryResultOutput = {
       success: result.success,

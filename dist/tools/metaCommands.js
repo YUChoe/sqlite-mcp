@@ -1,301 +1,276 @@
 /**
- * SQLite 메타 명령 도구
- * .tables, .schema, .indexes, .pragma 등의 SQLite 메타 명령을 처리합니다.
+ * SQLite 메타 명령어 도구
+ * .tables, .schema, .indexes, .pragma 등의 SQLite 메타 명령어를 구현합니다.
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
 import { MetaCommandSchema, MetaResultSchema } from '../types/schemas.js';
 import { zodToJsonSchema } from '../utils/schemaConverter.js';
 /**
- * SQLite 메타 명령 도구
+ * 메타 명령어 도구 정의
  */
-export const metaCommandsTool = {
-    name: 'meta_commands',
-    description: 'SQLite 메타 명령(.tables, .schema, .indexes, .pragma)을 실행하여 데이터베이스 구조 정보를 조회합니다.',
+export const metaCommandTool = {
+    name: 'meta_command',
+    description: 'SQLite 메타 명령어(.tables, .schema, .indexes, .pragma)를 실행합니다',
     inputSchema: zodToJsonSchema(MetaCommandSchema),
     outputSchema: zodToJsonSchema(MetaResultSchema),
-    handler: metaCommandsHandler
+    handler: metaCommandHandler
 };
 /**
- * 메타 명령 핸들러
+ * 메타 명령어 핸들러
  */
-async function metaCommandsHandler(params) {
+async function metaCommandHandler(params) {
+    const dbManager = new DatabaseManager();
     try {
         // 입력 검증
-        const validatedParams = MetaCommandSchema.parse(params);
-        const { dbPath, command, target } = validatedParams;
-        // 데이터베이스 매니저 인스턴스 생성
-        const dbManager = new DatabaseManager();
+        const validatedInput = MetaCommandSchema.parse(params);
+        const { dbPath, command, target } = validatedInput;
         let result;
-        // 명령에 따라 처리
         switch (command) {
             case '.tables':
-                result = await executeTablesCommand(dbManager, dbPath);
+                result = await handleTablesCommand(dbManager, dbPath);
                 break;
             case '.schema':
-                result = await executeSchemaCommand(dbManager, dbPath, target);
+                result = await handleSchemaCommand(dbManager, dbPath, target);
                 break;
             case '.indexes':
-                result = await executeIndexesCommand(dbManager, dbPath, target);
+                result = await handleIndexesCommand(dbManager, dbPath, target);
                 break;
             case '.pragma':
-                result = await executePragmaCommand(dbManager, dbPath, target);
+                result = await handlePragmaCommand(dbManager, dbPath, target);
                 break;
             default:
                 result = {
                     success: false,
                     result: '',
-                    error: `지원하지 않는 명령입니다: ${command}`
+                    error: `지원하지 않는 명령어입니다: ${command}`
                 };
         }
-        // 결과 검증 및 반환
-        const validatedResult = MetaResultSchema.parse(result);
         return {
-            content: [{ type: 'text', text: JSON.stringify(validatedResult, null, 2) }],
-            structuredContent: validatedResult
-        };
-    }
-    catch (error) {
-        const result = {
-            success: false,
-            result: '',
-            error: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다'
-        };
-        return {
-            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+            content: [{
+                    type: 'text',
+                    text: result.success ? result.result : `오류: ${result.error}`
+                }],
             structuredContent: result
         };
     }
+    catch (error) {
+        const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다';
+        return {
+            content: [{
+                    type: 'text',
+                    text: `메타 명령어 실행 중 오류 발생: ${errorMessage}`
+                }],
+            structuredContent: {
+                success: false,
+                result: '',
+                error: errorMessage
+            }
+        };
+    }
 }
 /**
- * .tables 명령 실행 - 모든 테이블과 뷰 목록 반환
+ * .tables 명령어 처리
  */
-async function executeTablesCommand(dbManager, dbPath) {
-    try {
-        const query = `
-      SELECT name, type
+async function handleTablesCommand(dbManager, dbPath) {
+    const query = `
+    SELECT name, type
+    FROM sqlite_master
+    WHERE type IN ('table', 'view')
+      AND name NOT LIKE 'sqlite_%'
+    ORDER BY type, name
+  `;
+    const queryResult = await dbManager.executeQuery(dbPath, query);
+    if (!queryResult.success) {
+        return {
+            success: false,
+            result: '',
+            error: queryResult.error || '.tables 명령 실행에 실패했습니다'
+        };
+    }
+    const tables = queryResult.data || [];
+    if (tables.length === 0) {
+        return {
+            success: true,
+            result: '테이블이 없습니다.'
+        };
+    }
+    const result = tables
+        .map((row) => `${row.name} (${row.type})`)
+        .join('\n');
+    return {
+        success: true,
+        result
+    };
+}
+/**
+ * .schema 명령어 처리
+ */
+async function handleSchemaCommand(dbManager, dbPath, target) {
+    let query;
+    let params = [];
+    if (target) {
+        // 특정 테이블/뷰의 스키마
+        query = `
+      SELECT sql
       FROM sqlite_master
-      WHERE type IN ('table', 'view')
+      WHERE name = ?
+        AND type IN ('table', 'view', 'index', 'trigger')
+        AND sql IS NOT NULL
+    `;
+        params = [target];
+    }
+    else {
+        // 전체 데이터베이스 스키마
+        query = `
+      SELECT sql
+      FROM sqlite_master
+      WHERE type IN ('table', 'view', 'index', 'trigger')
         AND name NOT LIKE 'sqlite_%'
+        AND sql IS NOT NULL
       ORDER BY type, name
     `;
-        const queryResult = dbManager.executeQuery(dbPath, query);
+    }
+    const queryResult = await dbManager.executeQuery(dbPath, query, params);
+    if (!queryResult.success) {
+        return {
+            success: false,
+            result: '',
+            error: queryResult.error || '.schema 명령 실행에 실패했습니다'
+        };
+    }
+    const schemas = queryResult.data || [];
+    if (schemas.length === 0) {
+        const message = target
+            ? `'${target}'에 대한 스키마를 찾을 수 없습니다.`
+            : '스키마가 없습니다.';
+        return {
+            success: true,
+            result: message
+        };
+    }
+    const result = schemas
+        .map((row) => row.sql)
+        .filter(Boolean)
+        .join(';\n\n') + ';';
+    return {
+        success: true,
+        result
+    };
+}
+/**
+ * .indexes 명령어 처리
+ */
+async function handleIndexesCommand(dbManager, dbPath, target) {
+    let query;
+    let params = [];
+    if (target) {
+        // 특정 테이블의 인덱스
+        query = `
+      SELECT name, sql
+      FROM sqlite_master
+      WHERE type = 'index'
+        AND tbl_name = ?
+        AND name NOT LIKE 'sqlite_%'
+      ORDER BY name
+    `;
+        params = [target];
+    }
+    else {
+        // 모든 인덱스
+        query = `
+      SELECT name, tbl_name, sql
+      FROM sqlite_master
+      WHERE type = 'index'
+        AND name NOT LIKE 'sqlite_%'
+      ORDER BY tbl_name, name
+    `;
+    }
+    const queryResult = await dbManager.executeQuery(dbPath, query, params);
+    if (!queryResult.success) {
+        return {
+            success: false,
+            result: '',
+            error: queryResult.error || '.indexes 명령 실행에 실패했습니다'
+        };
+    }
+    const indexes = queryResult.data || [];
+    if (indexes.length === 0) {
+        const message = target
+            ? `'${target}' 테이블에 인덱스가 없습니다.`
+            : '인덱스가 없습니다.';
+        return {
+            success: true,
+            result: message
+        };
+    }
+    const result = indexes
+        .map((row) => {
+        if (target) {
+            return `${row.name}: ${row.sql || 'AUTO INDEX'}`;
+        }
+        else {
+            return `${row.tbl_name}.${row.name}: ${row.sql || 'AUTO INDEX'}`;
+        }
+    })
+        .join('\n');
+    return {
+        success: true,
+        result
+    };
+}
+/**
+ * .pragma 명령어 처리
+ */
+async function handlePragmaCommand(dbManager, dbPath, target) {
+    if (!target) {
+        return {
+            success: false,
+            result: '',
+            error: 'PRAGMA 명령어에는 대상이 필요합니다 (예: user_version, table_info(테이블명))'
+        };
+    }
+    try {
+        const query = `PRAGMA ${target}`;
+        const queryResult = await dbManager.executeQuery(dbPath, query);
         if (!queryResult.success) {
             return {
                 success: false,
                 result: '',
-                error: queryResult.error || '.tables 명령 실행에 실패했습니다'
+                error: queryResult.error || 'PRAGMA 명령 실행에 실패했습니다'
             };
         }
-        // 결과를 SQLite CLI와 유사한 형식으로 포맷
-        const items = queryResult.data || [];
-        const result = items.map(item => `${item.name} (${item.type})`).join('\n');
-        return {
-            success: true,
-            result: result || '테이블이나 뷰가 없습니다'
-        };
-    }
-    catch (error) {
-        return {
-            success: false,
-            result: '',
-            error: error instanceof Error ? error.message : '.tables 명령 실행 중 오류가 발생했습니다'
-        };
-    }
-}
-/**
- * .schema 명령 실행 - 데이터베이스 또는 특정 테이블의 DDL 스키마 반환
- */
-async function executeSchemaCommand(dbManager, dbPath, target) {
-    try {
-        let query;
-        let params = [];
-        if (target) {
-            // 특정 테이블의 스키마
-            query = `
-        SELECT sql
-        FROM sqlite_master
-        WHERE type IN ('table', 'view', 'index', 'trigger')
-          AND (tbl_name = ? OR name = ?)
-          AND sql IS NOT NULL
-        ORDER BY type, name
-      `;
-            params = [target, target];
-        }
-        else {
-            // 전체 데이터베이스 스키마
-            query = `
-        SELECT sql
-        FROM sqlite_master
-        WHERE type IN ('table', 'view', 'index', 'trigger')
-          AND name NOT LIKE 'sqlite_%'
-          AND sql IS NOT NULL
-        ORDER BY type, name
-      `;
-        }
-        const queryResult = dbManager.executeQuery(dbPath, query, params);
-        if (!queryResult.success) {
-            return {
-                success: false,
-                result: '',
-                error: queryResult.error || '.schema 명령 실행에 실패했습니다'
-            };
-        }
-        // DDL 문들을 결합
-        const schemas = queryResult.data || [];
-        const result = schemas
-            .map(row => row.sql)
-            .filter(sql => sql) // null 값 제거
-            .join(';\n\n') + (schemas.length > 0 ? ';' : '');
-        return {
-            success: true,
-            result: result || (target ? `테이블 '${target}'의 스키마를 찾을 수 없습니다` : '스키마가 없습니다')
-        };
-    }
-    catch (error) {
-        return {
-            success: false,
-            result: '',
-            error: error instanceof Error ? error.message : '.schema 명령 실행 중 오류가 발생했습니다'
-        };
-    }
-}
-/**
- * .indexes 명령 실행 - 모든 인덱스 정보 반환
- */
-async function executeIndexesCommand(dbManager, dbPath, target) {
-    try {
-        let query;
-        let params = [];
-        if (target) {
-            // 특정 테이블의 인덱스
-            query = `
-        SELECT name, tbl_name, sql
-        FROM sqlite_master
-        WHERE type = 'index'
-          AND tbl_name = ?
-          AND name NOT LIKE 'sqlite_%'
-        ORDER BY name
-      `;
-            params = [target];
-        }
-        else {
-            // 모든 인덱스
-            query = `
-        SELECT name, tbl_name, sql
-        FROM sqlite_master
-        WHERE type = 'index'
-          AND name NOT LIKE 'sqlite_%'
-        ORDER BY tbl_name, name
-      `;
-        }
-        const queryResult = dbManager.executeQuery(dbPath, query, params);
-        if (!queryResult.success) {
-            return {
-                success: false,
-                result: '',
-                error: queryResult.error || '.indexes 명령 실행에 실패했습니다'
-            };
-        }
-        // 인덱스 정보를 포맷
-        const indexes = queryResult.data || [];
-        const result = indexes
-            .map(idx => `${idx.name} on ${idx.tbl_name}${idx.sql ? `\n  ${idx.sql}` : ''}`)
-            .join('\n\n');
-        return {
-            success: true,
-            result: result || (target ? `테이블 '${target}'에 인덱스가 없습니다` : '인덱스가 없습니다')
-        };
-    }
-    catch (error) {
-        return {
-            success: false,
-            result: '',
-            error: error instanceof Error ? error.message : '.indexes 명령 실행 중 오류가 발생했습니다'
-        };
-    }
-}
-/**
- * .pragma 명령 실행 - 데이터베이스 설정 정보 반환
- */
-async function executePragmaCommand(dbManager, dbPath, target) {
-    try {
-        let query;
-        if (target) {
-            // 특정 PRAGMA 명령
-            query = `PRAGMA ${target}`;
-        }
-        else {
-            // 주요 PRAGMA 정보들을 조회
-            const pragmas = [
-                'database_list',
-                'table_list',
-                'foreign_key_list',
-                'index_list',
-                'user_version',
-                'schema_version',
-                'page_size',
-                'cache_size',
-                'journal_mode',
-                'synchronous',
-                'foreign_keys'
-            ];
-            const results = [];
-            for (const pragma of pragmas) {
-                try {
-                    const pragmaResult = dbManager.executeQuery(dbPath, `PRAGMA ${pragma}`);
-                    if (pragmaResult.success && pragmaResult.data) {
-                        const data = pragmaResult.data;
-                        if (data.length > 0) {
-                            results.push(`${pragma}:`);
-                            data.forEach(row => {
-                                const values = Object.values(row).join(' | ');
-                                results.push(`  ${values}`);
-                            });
-                            results.push('');
-                        }
-                    }
-                }
-                catch (pragmaError) {
-                    // 개별 PRAGMA 오류는 무시하고 계속 진행
-                    continue;
-                }
-            }
+        const data = queryResult.data || [];
+        if (data.length === 0) {
             return {
                 success: true,
-                result: results.join('\n').trim() || 'PRAGMA 정보를 조회할 수 없습니다'
+                result: '결과가 없습니다.'
             };
         }
-        const queryResult = dbManager.executeQuery(dbPath, query);
-        if (!queryResult.success) {
-            return {
-                success: false,
-                result: '',
-                error: queryResult.error || '.pragma 명령 실행에 실패했습니다'
-            };
-        }
-        // PRAGMA 결과를 포맷
-        const data = queryResult.data || [];
+        // 결과를 포맷팅
         const result = data
-            .map(row => Object.values(row).join(' | '))
+            .map((row) => {
+            const values = Object.values(row);
+            return values.join(' | ');
+        })
             .join('\n');
         return {
             success: true,
-            result: result || 'PRAGMA 결과가 없습니다'
+            result
         };
     }
     catch (error) {
         return {
             success: false,
             result: '',
-            error: error instanceof Error ? error.message : '.pragma 명령 실행 중 오류가 발생했습니다'
+            error: error instanceof Error ? error.message : 'PRAGMA 명령 실행에 실패했습니다'
         };
     }
 }
 /**
- * 메타 명령 실행 함수 (MCP 서버에서 직접 호출용)
+ * 메타 명령어 실행 함수 (MCP 서버에서 직접 호출용)
  */
 export async function executeMetaCommand(params) {
-    const result = await metaCommandsHandler(params);
+    const result = await metaCommandHandler(params);
     return result.structuredContent;
 }
 //# sourceMappingURL=metaCommands.js.map

@@ -79,13 +79,13 @@ export declare const InsertDataSchema: z.ZodObject<{
     tableName: z.ZodString;
     data: z.ZodEffects<z.ZodRecord<z.ZodString, z.ZodAny>, Record<string, any>, Record<string, any>>;
 }, "strip", z.ZodTypeAny, {
+    data: Record<string, any>;
     dbPath: string;
     tableName: string;
-    data: Record<string, any>;
 }, {
+    data: Record<string, any>;
     dbPath: string;
     tableName: string;
-    data: Record<string, any>;
 }>;
 /**
  * SELECT 쿼리 입력 스키마
@@ -215,6 +215,7 @@ export declare const SchemaResultSchema: z.ZodObject<{
     error: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     success: boolean;
+    error?: string | undefined;
     columns?: {
         type: string;
         name: string;
@@ -222,11 +223,11 @@ export declare const SchemaResultSchema: z.ZodObject<{
         pk: boolean;
         dflt_value?: any;
     }[] | undefined;
-    error?: string | undefined;
     tables?: string[] | undefined;
     schema?: string | undefined;
 }, {
     success: boolean;
+    error?: string | undefined;
     columns?: {
         type: string;
         name: string;
@@ -234,7 +235,6 @@ export declare const SchemaResultSchema: z.ZodObject<{
         pk: boolean;
         dflt_value?: any;
     }[] | undefined;
-    error?: string | undefined;
     tables?: string[] | undefined;
     schema?: string | undefined;
 }>;

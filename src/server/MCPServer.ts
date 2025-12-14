@@ -20,7 +20,7 @@ import {
   getSchemaTool,
   updateDataTool,
   deleteDataTool,
-  metaCommandsTool
+  metaCommandTool
 } from '../tools/index.js';
 
 // 오류 처리 임포트
@@ -90,7 +90,7 @@ export class SQLiteMCPServer {
           getSchemaTool,
           updateDataTool,
           deleteDataTool,
-          metaCommandsTool
+          metaCommandTool
         ]
       };
     });

@@ -46,7 +46,7 @@ async function selectDataHandler(params: SelectDataInput): Promise<ToolResult> {
     const dbManager = new DatabaseManager();
 
     // 쿼리 실행
-    const queryResult = dbManager.executeQuery(dbPath, query, queryParams);
+    const queryResult = await dbManager.executeQuery(dbPath, query, queryParams);
 
     // 결과 검증 및 반환
     const result: QueryResultOutput = QueryResultSchema.parse(queryResult);

@@ -12,7 +12,6 @@ export declare class DatabaseManager implements IDatabaseManager {
     private readonly connectionTimeout;
     /**
      * 데이터베이스 연결 가져오기
-     * 캐시된 연결이 있으면 재사용하고, 없으면 새로 생성합니다.
      */
     getDatabase(dbPath: string): Database;
     /**
@@ -26,11 +25,11 @@ export declare class DatabaseManager implements IDatabaseManager {
     /**
      * SQL 쿼리 실행
      */
-    executeQuery(dbPath: string, sql: string, params?: any[]): QueryResult;
+    executeQuery(dbPath: string, sql: string, params?: any[]): Promise<QueryResult>;
     /**
      * 트랜잭션 실행
      */
-    executeTransaction(dbPath: string, operations: Operation[]): TransactionResult;
+    executeTransaction(dbPath: string, operations: Operation[]): Promise<TransactionResult>;
     /**
      * 경로 검증 및 정규화
      */
@@ -43,13 +42,5 @@ export declare class DatabaseManager implements IDatabaseManager {
      * 오래된 연결 정리
      */
     private cleanupOldConnections;
-    /**
-     * 데이터베이스 오류 처리
-     */
-    private handleDatabaseError;
-    /**
-     * SQL 오류 처리
-     */
-    private handleSQLError;
 }
 //# sourceMappingURL=DatabaseManager.d.ts.map
