@@ -3,16 +3,20 @@
   "version": "1.0.0",
   "description": "SQLite CRUD operations MCP server implementation in TypeScript",
   "main": "dist/index.js",
+  "bin": {
+    "sqlite-mcp-server": "dist/index.js"
+  },
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x dist/index.js",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint src/**/*.ts",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
     "mcp",

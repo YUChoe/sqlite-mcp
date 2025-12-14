@@ -1,45 +1,38 @@
+#!/usr/bin/env node
+
 /**
  * SQLite MCP 서버 진입점
+ * npx로 실행 가능한 메인 파일
  */
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import type { MCPServerConfig } from './types/server.js';
+import { SQLiteMCPServer, defaultConfig } from './server/MCPServer.js';
+import { createStdioTransport } from './server/transport/index.js';
 
 /**
- * 서버 설정
+ * 메인 함수 - MCP 서버 시작
  */
-const serverConfig: MCPServerConfig = {
-  name: 'sqlite-mcp-server',
-  version: '1.0.0',
-  capabilities: {
-    tools: {
-      listChanged: true
-    }
-  }
-};
-
-/**
- * 메인 함수
- */
-async function main() {
-  console.error('SQLite MCP 서버를 시작합니다...');
-
+async function main(): Promise<void> {
   try {
-    // MCP 서버 인스턴스 생성
-    const server = new Server({
-      name: serverConfig.name,
-      version: serverConfig.version
-    }, {
-      capabilities: serverConfig.capabilities
+    console.error('SQLite MCP 서버를 시작합니다...');
+
+    const server = new SQLiteMCPServer(defaultConfig);
+    const transport = createStdioTransport(server);
+
+    // 프로세스 종료 시 정리 작업
+    process.on('SIGINT', async () => {
+      console.error('SIGINT 신호를 받았습니다. 서버를 종료합니다...');
+      await transport.stop();
+      process.exit(0);
     });
 
-    // Stdio 전송 계층 설정
-    const transport = new StdioServerTransport();
+    process.on('SIGTERM', async () => {
+      console.error('SIGTERM 신호를 받았습니다. 서버를 종료합니다...');
+      await transport.stop();
+      process.exit(0);
+    });
 
-    // 서버와 전송 계층 연결
-    await server.connect(transport);
-
+    // 서버 시작
+    await transport.start();
     console.error('SQLite MCP 서버가 성공적으로 시작되었습니다.');
 
   } catch (error) {
@@ -48,21 +41,8 @@ async function main() {
   }
 }
 
-// 프로세스 종료 시 정리 작업
-process.on('SIGINT', () => {
-  console.error('서버를 종료합니다...');
-  process.exit(0);
-});
-
-process.on('SIGTERM', () => {
-  console.error('서버를 종료합니다...');
-  process.exit(0);
-});
-
 // 메인 함수 실행
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((error) => {
-    console.error('예상치 못한 오류:', error);
-    process.exit(1);
-  });
-}
+main().catch((error) => {
+  console.error('예상치 못한 오류:', error);
+  process.exit(1);
+});

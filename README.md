@@ -54,6 +54,25 @@ src/
 
 ## Usage
 
+### MCP Client Configuration
+
+To use this server with an MCP client, add the following configuration:
+
+```json
+{
+  "mcpServers": {
+    "sqlite-mcp": {
+      "command": "npx",
+      "args": ["-y", "git+https://github.com/YUChoe/sqlite-mcp"],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}
+```
+
+### Available Tools
+
 The server exposes the following MCP tools:
 
 ### Create Operations
@@ -143,6 +162,25 @@ src/
 ```
 
 ## 사용법
+
+### MCP 클라이언트 설정
+
+MCP 클라이언트에서 이 서버를 사용하려면 다음 설정을 추가하세요:
+
+```json
+{
+  "mcpServers": {
+    "sqlite-mcp": {
+      "command": "npx",
+      "args": ["-y", "git+https://github.com/YUChoe/sqlite-mcp"],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}
+```
+
+### 사용 가능한 도구
 
 서버는 다음 MCP 도구들을 제공합니다:
 
