@@ -157,3 +157,10 @@ function isValidTableName(name: string): boolean {
 function isValidColumnName(name: string): boolean {
   return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name);
 }
+/**
+ * 데이터 삽입 함수 (MCP 서버에서 직접 호출용)
+ */
+export async function insertData(params: InsertDataInput): Promise<QueryResultOutput> {
+  const result = await insertDataHandler(params);
+  return result.structuredContent as QueryResultOutput;
+}

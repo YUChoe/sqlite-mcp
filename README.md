@@ -1,6 +1,6 @@
 # SQLite MCP Server
 
-SQLite CRUD operations MCP (Model Context Protocol) server implementation in TypeScript.
+A comprehensive Model Context Protocol (MCP) server implementation that provides full CRUD (Create, Read, Update, Delete) operations for SQLite databases. This server allows clients to interact with multiple SQLite database files through a standardized MCP interface.
 
 ## Overview
 

@@ -102,3 +102,10 @@ function validateUpdateQuery(query: string): void {
     }
   }
 }
+/**
+ * 데이터 업데이트 함수 (MCP 서버에서 직접 호출용)
+ */
+export async function updateData(params: UpdateDataInput): Promise<QueryResultOutput> {
+  const result = await updateDataHandler(params);
+  return result.structuredContent as QueryResultOutput;
+}

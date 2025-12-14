@@ -67,3 +67,10 @@ async function selectDataHandler(params: SelectDataInput): Promise<ToolResult> {
     };
   }
 }
+/**
+ * 데이터 조회 함수 (MCP 서버에서 직접 호출용)
+ */
+export async function selectData(params: SelectDataInput): Promise<QueryResultOutput> {
+  const result = await selectDataHandler(params);
+  return result.structuredContent as QueryResultOutput;
+}

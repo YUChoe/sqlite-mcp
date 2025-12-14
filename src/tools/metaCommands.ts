@@ -322,3 +322,10 @@ async function executePragmaCommand(dbManager: DatabaseManager, dbPath: string, 
     };
   }
 }
+/**
+ * 메타 명령 실행 함수 (MCP 서버에서 직접 호출용)
+ */
+export async function executeMetaCommand(params: MetaCommandInput): Promise<MetaResultOutput> {
+  const result = await metaCommandsHandler(params);
+  return result.structuredContent as MetaResultOutput;
+}

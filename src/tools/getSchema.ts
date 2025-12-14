@@ -175,3 +175,10 @@ async function getTableSchema(dbManager: DatabaseManager, dbPath: string, tableN
     };
   }
 }
+/**
+ * 스키마 정보 조회 함수 (MCP 서버에서 직접 호출용)
+ */
+export async function getSchema(params: GetSchemaInput): Promise<SchemaResultOutput> {
+  const result = await getSchemaHandler(params);
+  return result.structuredContent as SchemaResultOutput;
+}

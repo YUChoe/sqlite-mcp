@@ -103,3 +103,10 @@ function validateDeleteQuery(query: string): void {
     }
   }
 }
+/**
+ * 데이터 삭제 함수 (MCP 서버에서 직접 호출용)
+ */
+export async function deleteData(params: DeleteDataInput): Promise<QueryResultOutput> {
+  const result = await deleteDataHandler(params);
+  return result.structuredContent as QueryResultOutput;
+}

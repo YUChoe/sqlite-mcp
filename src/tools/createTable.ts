@@ -129,3 +129,11 @@ function isValidColumnType(type: string): boolean {
   const baseType = type.split('(')[0].toUpperCase();
   return validTypes.includes(baseType);
 }
+
+/**
+ * 테이블 생성 함수 (MCP 서버에서 직접 호출용)
+ */
+export async function createTable(params: CreateTableInput): Promise<QueryResultOutput> {
+  const result = await createTableHandler(params);
+  return result.structuredContent as QueryResultOutput;
+}
