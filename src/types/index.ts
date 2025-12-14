@@ -100,20 +100,20 @@ export interface ToolDefinition {
   description: string;
   /** 입력 스키마 (Zod) */
   inputSchema: z.ZodSchema;
-  /** 출력 스키마 (Zod) */
-  outputSchema: z.ZodSchema;
   /** 도구 핸들러 함수 */
   handler: ToolHandler;
 }
 
 /**
- * MCP 도구 실행 결과
+ * MCP 도구 실행 결과 (MCP SDK 호환)
  */
 export interface ToolResult {
   /** 텍스트 콘텐츠 */
   content: Array<{ type: 'text'; text: string }>;
-  /** 구조화된 콘텐츠 (선택사항) */
-  structuredContent?: any;
+  /** 오류 여부 */
+  isError?: boolean;
+  /** 인덱스 시그니처 추가 (MCP SDK 호환성) */
+  [key: string]: unknown;
 }
 
 // ============================================================================

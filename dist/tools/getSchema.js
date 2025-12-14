@@ -4,15 +4,13 @@
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
 import { GetSchemaSchema, SchemaResultSchema } from '../types/schemas.js';
-import { zodToJsonSchema } from '../utils/schemaConverter.js';
 /**
  * 스키마 정보 조회 도구
  */
 export const getSchemaTool = {
     name: 'get_schema',
     description: 'SQLite 데이터베이스의 테이블 목록과 스키마 정보를 조회합니다. 특정 테이블을 지정하면 해당 테이블의 상세 정보를 반환합니다.',
-    inputSchema: zodToJsonSchema(GetSchemaSchema),
-    outputSchema: zodToJsonSchema(SchemaResultSchema),
+    inputSchema: GetSchemaSchema,
     handler: getSchemaHandler
 };
 /**
@@ -37,8 +35,7 @@ async function getSchemaHandler(params) {
         // 결과 검증 및 반환
         const validatedResult = SchemaResultSchema.parse(result);
         return {
-            content: [{ type: 'text', text: JSON.stringify(validatedResult, null, 2) }],
-            structuredContent: validatedResult
+            content: [{ type: 'text', text: JSON.stringify(validatedResult, null, 2) }]
         };
     }
     catch (error) {
@@ -47,8 +44,7 @@ async function getSchemaHandler(params) {
             error: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다'
         };
         return {
-            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-            structuredContent: result
+            content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
         };
     }
 }
@@ -155,7 +151,6 @@ async function getTableSchema(dbManager, dbPath, tableName) {
  * 스키마 정보 조회 함수 (MCP 서버에서 직접 호출용)
  */
 export async function getSchema(params) {
-    const result = await getSchemaHandler(params);
-    return result.structuredContent;
+    return await getSchemaHandler(params);
 }
 //# sourceMappingURL=getSchema.js.map

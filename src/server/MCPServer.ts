@@ -9,7 +9,8 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   InitializeRequestSchema,
-  InitializedNotificationSchema
+  InitializedNotificationSchema,
+  CallToolResult
 } from '@modelcontextprotocol/sdk/types.js';
 
 // 도구 임포트
@@ -23,8 +24,13 @@ import {
   metaCommandTool
 } from '../tools/index.js';
 
-// 오류 처리 임포트
-import { ErrorHandler } from './ErrorHandler.js';
+// 테스트 도구 임포트
+import { testTool } from '../tools/testTool.js';
+
+
+
+// 스키마 변환 유틸리티 임포트
+import { zodToJsonSchema } from '../utils/schemaConverter.js';
 
 /**
  * MCP 서버 설정 인터페이스
@@ -84,55 +90,151 @@ export class SQLiteMCPServer {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
         tools: [
-          createTableTool,
-          insertDataTool,
-          selectDataTool,
-          getSchemaTool,
-          updateDataTool,
-          deleteDataTool,
-          metaCommandTool
+          {
+            name: createTableTool.name,
+            description: createTableTool.description,
+            inputSchema: zodToJsonSchema(createTableTool.inputSchema)
+          },
+          {
+            name: insertDataTool.name,
+            description: insertDataTool.description,
+            inputSchema: zodToJsonSchema(insertDataTool.inputSchema)
+          },
+          {
+            name: selectDataTool.name,
+            description: selectDataTool.description,
+            inputSchema: zodToJsonSchema(selectDataTool.inputSchema)
+          },
+          {
+            name: getSchemaTool.name,
+            description: getSchemaTool.description,
+            inputSchema: zodToJsonSchema(getSchemaTool.inputSchema)
+          },
+          {
+            name: updateDataTool.name,
+            description: updateDataTool.description,
+            inputSchema: zodToJsonSchema(updateDataTool.inputSchema)
+          },
+          {
+            name: deleteDataTool.name,
+            description: deleteDataTool.description,
+            inputSchema: zodToJsonSchema(deleteDataTool.inputSchema)
+          },
+          {
+            name: metaCommandTool.name,
+            description: metaCommandTool.description,
+            inputSchema: zodToJsonSchema(metaCommandTool.inputSchema)
+          },
+          {
+            name: testTool.name,
+            description: testTool.description,
+            inputSchema: zodToJsonSchema(testTool.inputSchema)
+          }
         ]
       };
     });
 
     // 도구 실행 핸들러
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    this.server.setRequestHandler(CallToolRequestSchema, async (request): Promise<CallToolResult> => {
       const { name, arguments: args } = request.params;
 
+      console.error('=== MCP Tool Call ===');
+      console.error('Tool name:', name);
+      console.error('Arguments:', JSON.stringify(args, null, 2));
+
       try {
+        let result: CallToolResult;
+
         switch (name) {
           case 'create_table':
-            return await this.executeCreateTable(args);
+            result = await this.executeCreateTable(args);
+            break;
           case 'insert_data':
-            return await this.executeInsertData(args);
+            result = await this.executeInsertData(args);
+            break;
           case 'select_data':
-            return await this.executeSelectData(args);
+            result = await this.executeSelectData(args);
+            break;
           case 'get_schema':
-            return await this.executeGetSchema(args);
+            result = await this.executeGetSchema(args);
+            break;
           case 'update_data':
-            return await this.executeUpdateData(args);
+            result = await this.executeUpdateData(args);
+            break;
           case 'delete_data':
-            return await this.executeDeleteData(args);
+            result = await this.executeDeleteData(args);
+            break;
           case 'meta_commands':
-            return await this.executeMetaCommands(args);
+            result = await this.executeMetaCommands(args);
+            break;
+          case 'test_tool':
+            result = await this.executeTestTool(args);
+            break;
           default:
-            throw new Error(`알 수 없는 도구: ${name}`);
+            result = {
+              content: [{
+                type: 'text' as const,
+                text: `알 수 없는 도구: ${name}`
+              }]
+            };
         }
-      } catch (error) {
-        // 통합 오류 처리 시스템 사용
-        const errorResponse = ErrorHandler.handleGenericError(error, {
-          tool: name,
-          path: args?.dbPath as string,
-          query: args?.query as string
+
+        console.error('=== Final Result ===');
+        console.error('Result:', JSON.stringify(result, null, 2));
+        console.error('Content length:', result.content?.length);
+        console.error('First content item:', JSON.stringify(result.content?.[0], null, 2));
+
+        // 결과 검증 및 보정
+        if (!result.content || !Array.isArray(result.content)) {
+          console.error('ERROR: Invalid content structure');
+          return {
+            content: [{
+              type: 'text' as const,
+              text: 'Internal error: Invalid content structure'
+            }]
+          };
+        }
+
+        // 각 content 항목 검증
+        const validatedContent = result.content.map((item, index) => {
+          console.error(`Validating content item ${index}:`, JSON.stringify(item, null, 2));
+
+          if (!item || typeof item !== 'object') {
+            console.error(`ERROR: Content item ${index} is not an object`);
+            return { type: 'text' as const, text: 'Invalid content item' };
+          }
+
+          if (item.type !== 'text') {
+            console.error(`ERROR: Content item ${index} type is not 'text':`, item.type);
+            return { type: 'text' as const, text: 'Invalid content type' };
+          }
+
+          if (typeof item.text !== 'string') {
+            console.error(`ERROR: Content item ${index} text is not a string:`, typeof item.text, item.text);
+            return { type: 'text' as const, text: String(item.text || 'Empty text') };
+          }
+
+          return { type: 'text' as const, text: item.text };
         });
 
-        // 오류 로깅
-        if (error instanceof Error) {
-          const mcpError = ErrorHandler.handleMCPError(error, { tool: name, args });
-          ErrorHandler.logError(mcpError, { tool: name, args });
-        }
+        const finalResult = { content: validatedContent };
+        console.error('=== Validated Final Result ===');
+        console.error('Final result:', JSON.stringify(finalResult, null, 2));
 
-        return errorResponse;
+        return finalResult;
+
+      } catch (error) {
+        console.error('=== Tool Execution Error ===');
+        console.error('Error:', error);
+        console.error('Error message:', error instanceof Error ? error.message : String(error));
+        console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+
+        return {
+          content: [{
+            type: 'text' as const,
+            text: `도구 실행 중 오류 발생: ${error instanceof Error ? error.message : String(error)}`
+          }]
+        };
       }
     });
   }
@@ -140,172 +242,144 @@ export class SQLiteMCPServer {
   /**
    * 테이블 생성 도구 실행
    */
-  private async executeCreateTable(args: any) {
-    try {
-      const { createTable } = await import('../tools/createTable.js');
-      const result = await createTable(args);
+  private async executeCreateTable(args: any): Promise<CallToolResult> {
+    console.error('executeCreateTable called with args:', JSON.stringify(args));
+    const { createTable } = await import('../tools/createTable.js');
+    const result = await createTable(args);
+    console.error('executeCreateTable result:', JSON.stringify(result));
+    console.error('executeCreateTable result.content:', JSON.stringify(result.content));
+    console.error('executeCreateTable result.content[0]:', JSON.stringify(result.content?.[0]));
+    console.error('executeCreateTable result.content[0].text:', result.content?.[0]?.text);
 
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: JSON.stringify(result, null, 2)
-          }
-        ]
-      };
-    } catch (error) {
-      return ErrorHandler.handleGenericError(error, {
-        path: args?.dbPath,
-        tool: 'create_table'
-      });
-    }
+    // 명시적으로 CallToolResult 형식으로 반환 (타입 리터럴 사용)
+    return {
+      content: result.content.map(item => ({
+        type: 'text' as const,
+        text: item.text || ''
+      }))
+    };
   }
 
   /**
    * 데이터 삽입 도구 실행
    */
-  private async executeInsertData(args: any) {
-    try {
-      const { insertData } = await import('../tools/insertData.js');
-      const result = await insertData(args);
+  private async executeInsertData(args: any): Promise<CallToolResult> {
+    console.error('executeInsertData called with args:', JSON.stringify(args));
+    const { insertData } = await import('../tools/insertData.js');
+    const result = await insertData(args);
+    console.error('executeInsertData result:', JSON.stringify(result));
 
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: JSON.stringify(result, null, 2)
-          }
-        ]
-      };
-    } catch (error) {
-      return ErrorHandler.handleGenericError(error, {
-        path: args?.dbPath,
-        tool: 'insert_data'
-      });
-    }
+    return {
+      content: result.content.map(item => ({
+        type: 'text' as const,
+        text: item.text || ''
+      }))
+    };
   }
 
   /**
    * 데이터 조회 도구 실행
    */
-  private async executeSelectData(args: any) {
-    try {
-      const { selectData } = await import('../tools/selectData.js');
-      const result = await selectData(args);
+  private async executeSelectData(args: any): Promise<CallToolResult> {
+    console.error('executeSelectData called with args:', JSON.stringify(args));
+    const { selectData } = await import('../tools/selectData.js');
+    const result = await selectData(args);
+    console.error('executeSelectData result:', JSON.stringify(result));
 
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: JSON.stringify(result, null, 2)
-          }
-        ]
-      };
-    } catch (error) {
-      return ErrorHandler.handleGenericError(error, {
-        path: args?.dbPath,
-        query: args?.query,
-        tool: 'select_data'
-      });
-    }
+    return {
+      content: result.content.map(item => ({
+        type: 'text' as const,
+        text: item.text || ''
+      }))
+    };
   }
 
   /**
    * 스키마 정보 조회 도구 실행
    */
-  private async executeGetSchema(args: any) {
-    try {
-      const { getSchema } = await import('../tools/getSchema.js');
-      const result = await getSchema(args);
+  private async executeGetSchema(args: any): Promise<CallToolResult> {
+    console.error('executeGetSchema called with args:', JSON.stringify(args));
+    const { getSchema } = await import('../tools/getSchema.js');
+    const result = await getSchema(args);
+    console.error('executeGetSchema result:', JSON.stringify(result));
+    console.error('executeGetSchema result.content:', JSON.stringify(result.content));
+    console.error('executeGetSchema result.content[0]:', JSON.stringify(result.content?.[0]));
+    console.error('executeGetSchema result.content[0].text:', result.content?.[0]?.text);
 
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: JSON.stringify(result, null, 2)
-        }
-      ]
+    return {
+      content: result.content.map(item => ({
+        type: 'text' as const,
+        text: item.text || ''
+      }))
     };
-    } catch (error) {
-      return ErrorHandler.handleGenericError(error, {
-        path: args?.dbPath,
-        tool: 'get_schema'
-      });
-    }
   }
 
   /**
    * 데이터 업데이트 도구 실행
    */
-  private async executeUpdateData(args: any) {
-    try {
-      const { updateData } = await import('../tools/updateData.js');
-      const result = await updateData(args);
+  private async executeUpdateData(args: any): Promise<CallToolResult> {
+    console.error('executeUpdateData called with args:', JSON.stringify(args));
+    const { updateData } = await import('../tools/updateData.js');
+    const result = await updateData(args);
+    console.error('executeUpdateData result:', JSON.stringify(result));
 
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: JSON.stringify(result, null, 2)
-          }
-        ]
-      };
-    } catch (error) {
-      return ErrorHandler.handleGenericError(error, {
-        path: args?.dbPath,
-        query: args?.query,
-        tool: 'update_data'
-      });
-    }
+    return {
+      content: result.content.map(item => ({
+        type: 'text' as const,
+        text: item.text || ''
+      }))
+    };
   }
 
   /**
    * 데이터 삭제 도구 실행
    */
-  private async executeDeleteData(args: any) {
-    try {
-      const { deleteData } = await import('../tools/deleteData.js');
-      const result = await deleteData(args);
+  private async executeDeleteData(args: any): Promise<CallToolResult> {
+    console.error('executeDeleteData called with args:', JSON.stringify(args));
+    const { deleteData } = await import('../tools/deleteData.js');
+    const result = await deleteData(args);
+    console.error('executeDeleteData result:', JSON.stringify(result));
 
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: JSON.stringify(result, null, 2)
-          }
-        ]
-      };
-    } catch (error) {
-      return ErrorHandler.handleGenericError(error, {
-        path: args?.dbPath,
-        query: args?.query,
-        tool: 'delete_data'
-      });
-    }
+    return {
+      content: result.content.map(item => ({
+        type: 'text' as const,
+        text: item.text || ''
+      }))
+    };
   }
 
   /**
    * 메타 명령 도구 실행
    */
-  private async executeMetaCommands(args: any) {
-    try {
-      const { executeMetaCommand } = await import('../tools/metaCommands.js');
-      const result = await executeMetaCommand(args);
+  private async executeMetaCommands(args: any): Promise<CallToolResult> {
+    console.error('executeMetaCommands called with args:', JSON.stringify(args));
+    const { executeMetaCommand } = await import('../tools/metaCommands.js');
+    const result = await executeMetaCommand(args);
+    console.error('executeMetaCommands result:', JSON.stringify(result));
 
-      return {
-        content: [
-          {
-            type: 'text' as const,
-            text: JSON.stringify(result, null, 2)
-          }
-        ]
-      };
-    } catch (error) {
-      return ErrorHandler.handleGenericError(error, {
-        path: args?.dbPath,
-        tool: 'meta_commands'
-      });
-    }
+    return {
+      content: result.content.map(item => ({
+        type: 'text' as const,
+        text: item.text || ''
+      }))
+    };
+  }
+
+  /**
+   * 테스트 도구 실행
+   */
+  private async executeTestTool(args: any): Promise<CallToolResult> {
+    console.error('executeTestTool called with args:', JSON.stringify(args));
+    const { testFunction } = await import('../tools/testTool.js');
+    const result = await testFunction(args);
+    console.error('executeTestTool result:', JSON.stringify(result));
+
+    return {
+      content: result.content.map(item => ({
+        type: 'text' as const,
+        text: item.text || ''
+      }))
+    };
   }
 
   /**

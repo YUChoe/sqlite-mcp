@@ -54,6 +54,10 @@ export declare class SQLiteMCPServer {
      */
     private executeMetaCommands;
     /**
+     * 테스트 도구 실행
+     */
+    private executeTestTool;
+    /**
      * 서버 시작 (Stdio 전송 사용)
      */
     start(): Promise<void>;

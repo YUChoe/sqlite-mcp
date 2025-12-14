@@ -3,16 +3,14 @@
  * UPDATE SQL을 실행하고 영향받은 행 수를 반환합니다.
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
-import { UpdateDataSchema, QueryResultSchema } from '../types/schemas.js';
-import { zodToJsonSchema } from '../utils/schemaConverter.js';
+import { UpdateDataSchema } from '../types/schemas.js';
 /**
  * 데이터 업데이트 도구 정의
  */
 export const updateDataTool = {
     name: 'update_data',
     description: 'SQLite 테이블의 기존 데이터를 업데이트합니다',
-    inputSchema: zodToJsonSchema(UpdateDataSchema),
-    outputSchema: zodToJsonSchema(QueryResultSchema),
+    inputSchema: UpdateDataSchema,
     handler: updateDataHandler
 };
 /**
@@ -27,19 +25,14 @@ async function updateDataHandler(params) {
         validateUpdateQuery(validatedInput.query);
         // SQL 실행
         const result = await dbManager.executeQuery(validatedInput.dbPath, validatedInput.query, validatedInput.params);
-        const output = {
-            success: result.success,
-            rowsAffected: result.rowsAffected,
-            error: result.error
-        };
+        const message = result.success
+            ? `데이터가 성공적으로 업데이트되었습니다. 영향받은 행 수: ${result.rowsAffected || 0}`
+            : `데이터 업데이트 실패: ${result.error || '알 수 없는 오류'}`;
         return {
             content: [{
                     type: 'text',
-                    text: result.success
-                        ? `데이터가 성공적으로 업데이트되었습니다. 영향받은 행 수: ${result.rowsAffected}`
-                        : `데이터 업데이트 실패: ${result.error}`
-                }],
-            structuredContent: output
+                    text: message
+                }]
         };
     }
     catch (error) {
@@ -48,11 +41,7 @@ async function updateDataHandler(params) {
             content: [{
                     type: 'text',
                     text: `데이터 업데이트 중 오류 발생: ${errorMessage}`
-                }],
-            structuredContent: {
-                success: false,
-                error: errorMessage
-            }
+                }]
         };
     }
 }
@@ -87,7 +76,6 @@ function validateUpdateQuery(query) {
  * 데이터 업데이트 함수 (MCP 서버에서 직접 호출용)
  */
 export async function updateData(params) {
-    const result = await updateDataHandler(params);
-    return result.structuredContent;
+    return await updateDataHandler(params);
 }
 //# sourceMappingURL=updateData.js.map

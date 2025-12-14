@@ -3,16 +3,14 @@
  * DELETE SQL을 실행하고 삭제된 행 수를 반환합니다.
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
-import { DeleteDataSchema, QueryResultSchema } from '../types/schemas.js';
-import { zodToJsonSchema } from '../utils/schemaConverter.js';
+import { DeleteDataSchema } from '../types/schemas.js';
 /**
  * 데이터 삭제 도구 정의
  */
 export const deleteDataTool = {
     name: 'delete_data',
     description: 'SQLite 테이블에서 데이터를 삭제합니다. 조건부 삭제와 전체 삭제를 지원합니다.',
-    inputSchema: zodToJsonSchema(DeleteDataSchema),
-    outputSchema: zodToJsonSchema(QueryResultSchema),
+    inputSchema: DeleteDataSchema,
     handler: deleteDataHandler
 };
 /**
@@ -27,19 +25,13 @@ async function deleteDataHandler(params) {
         validateDeleteQuery(validatedInput.query);
         // SQL 실행
         const result = await dbManager.executeQuery(validatedInput.dbPath, validatedInput.query, validatedInput.params);
-        const output = {
-            success: result.success,
-            rowsAffected: result.rowsAffected,
-            error: result.error
-        };
         return {
             content: [{
                     type: 'text',
                     text: result.success
                         ? `데이터가 성공적으로 삭제되었습니다. 삭제된 행 수: ${result.rowsAffected}`
                         : `데이터 삭제 실패: ${result.error}`
-                }],
-            structuredContent: output
+                }]
         };
     }
     catch (error) {
@@ -48,11 +40,7 @@ async function deleteDataHandler(params) {
             content: [{
                     type: 'text',
                     text: `데이터 삭제 중 오류 발생: ${errorMessage}`
-                }],
-            structuredContent: {
-                success: false,
-                error: errorMessage
-            }
+                }]
         };
     }
 }
@@ -88,7 +76,6 @@ function validateDeleteQuery(query) {
  * 데이터 삭제 함수 (MCP 서버에서 직접 호출용)
  */
 export async function deleteData(params) {
-    const result = await deleteDataHandler(params);
-    return result.structuredContent;
+    return await deleteDataHandler(params);
 }
 //# sourceMappingURL=deleteData.js.map

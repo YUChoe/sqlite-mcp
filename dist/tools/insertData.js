@@ -3,16 +3,14 @@
  * INSERT SQL을 생성하고 실행합니다.
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
-import { InsertDataSchema, QueryResultSchema } from '../types/schemas.js';
-import { zodToJsonSchema } from '../utils/schemaConverter.js';
+import { InsertDataSchema } from '../types/schemas.js';
 /**
  * 데이터 삽입 도구 정의
  */
 export const insertDataTool = {
     name: 'insert_data',
     description: 'SQLite 테이블에 새로운 데이터를 삽입합니다',
-    inputSchema: zodToJsonSchema(InsertDataSchema),
-    outputSchema: zodToJsonSchema(QueryResultSchema),
+    inputSchema: InsertDataSchema,
     handler: insertDataHandler
 };
 /**
@@ -27,20 +25,14 @@ async function insertDataHandler(params) {
         const { sql, values } = generateInsertSQL(validatedInput);
         // SQL 실행
         const result = await dbManager.executeQuery(validatedInput.dbPath, sql, values);
-        const output = {
-            success: result.success,
-            rowsAffected: result.rowsAffected,
-            lastInsertRowid: result.lastInsertRowid,
-            error: result.error
-        };
+        const message = result.success
+            ? `데이터가 성공적으로 삽입되었습니다. 삽입된 행 ID: ${result.lastInsertRowid || 'N/A'}`
+            : `데이터 삽입 실패: ${result.error || '알 수 없는 오류'}`;
         return {
             content: [{
                     type: 'text',
-                    text: result.success
-                        ? `데이터가 성공적으로 삽입되었습니다. 삽입된 행 ID: ${result.lastInsertRowid}`
-                        : `데이터 삽입 실패: ${result.error}`
-                }],
-            structuredContent: output
+                    text: message
+                }]
         };
     }
     catch (error) {
@@ -49,11 +41,7 @@ async function insertDataHandler(params) {
             content: [{
                     type: 'text',
                     text: `데이터 삽입 중 오류 발생: ${errorMessage}`
-                }],
-            structuredContent: {
-                success: false,
-                error: errorMessage
-            }
+                }]
         };
     }
 }
@@ -134,7 +122,6 @@ function isValidColumnName(name) {
  * 데이터 삽입 함수 (MCP 서버에서 직접 호출용)
  */
 export async function insertData(params) {
-    const result = await insertDataHandler(params);
-    return result.structuredContent;
+    return await insertDataHandler(params);
 }
 //# sourceMappingURL=insertData.js.map

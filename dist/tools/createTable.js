@@ -3,16 +3,14 @@
  * CREATE TABLE SQL을 생성하고 실행합니다.
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
-import { CreateTableSchema, QueryResultSchema } from '../types/schemas.js';
-import { zodToJsonSchema } from '../utils/schemaConverter.js';
+import { CreateTableSchema } from '../types/schemas.js';
 /**
  * 테이블 생성 도구 정의
  */
 export const createTableTool = {
     name: 'create_table',
     description: '새로운 SQLite 테이블을 생성합니다',
-    inputSchema: zodToJsonSchema(CreateTableSchema),
-    outputSchema: zodToJsonSchema(QueryResultSchema),
+    inputSchema: CreateTableSchema,
     handler: createTableHandler
 };
 /**
@@ -27,19 +25,14 @@ async function createTableHandler(params) {
         const sql = generateCreateTableSQL(validatedInput);
         // SQL 실행
         const result = await dbManager.executeQuery(validatedInput.dbPath, sql);
-        const output = {
-            success: result.success,
-            rowsAffected: result.rowsAffected,
-            error: result.error
-        };
+        const message = result.success
+            ? `테이블 '${validatedInput.tableName}'이(가) 성공적으로 생성되었습니다.`
+            : `테이블 생성 실패: ${result.error || '알 수 없는 오류'}`;
         return {
             content: [{
                     type: 'text',
-                    text: result.success
-                        ? `테이블 '${validatedInput.tableName}'이(가) 성공적으로 생성되었습니다.`
-                        : `테이블 생성 실패: ${result.error}`
-                }],
-            structuredContent: output
+                    text: message
+                }]
         };
     }
     catch (error) {
@@ -48,11 +41,7 @@ async function createTableHandler(params) {
             content: [{
                     type: 'text',
                     text: `테이블 생성 중 오류 발생: ${errorMessage}`
-                }],
-            structuredContent: {
-                success: false,
-                error: errorMessage
-            }
+                }]
         };
     }
 }
@@ -111,7 +100,6 @@ function isValidColumnType(type) {
  * 테이블 생성 함수 (MCP 서버에서 직접 호출용)
  */
 export async function createTable(params) {
-    const result = await createTableHandler(params);
-    return result.structuredContent;
+    return await createTableHandler(params);
 }
 //# sourceMappingURL=createTable.js.map

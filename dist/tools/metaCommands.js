@@ -3,16 +3,14 @@
  * .tables, .schema, .indexes, .pragma 등의 SQLite 메타 명령어를 구현합니다.
  */
 import { DatabaseManager } from '../database/DatabaseManager.js';
-import { MetaCommandSchema, MetaResultSchema } from '../types/schemas.js';
-import { zodToJsonSchema } from '../utils/schemaConverter.js';
+import { MetaCommandSchema } from '../types/schemas.js';
 /**
  * 메타 명령어 도구 정의
  */
 export const metaCommandTool = {
     name: 'meta_command',
     description: 'SQLite 메타 명령어(.tables, .schema, .indexes, .pragma)를 실행합니다',
-    inputSchema: zodToJsonSchema(MetaCommandSchema),
-    outputSchema: zodToJsonSchema(MetaResultSchema),
+    inputSchema: MetaCommandSchema,
     handler: metaCommandHandler
 };
 /**
@@ -49,8 +47,7 @@ async function metaCommandHandler(params) {
             content: [{
                     type: 'text',
                     text: result.success ? result.result : `오류: ${result.error}`
-                }],
-            structuredContent: result
+                }]
         };
     }
     catch (error) {
@@ -59,12 +56,7 @@ async function metaCommandHandler(params) {
             content: [{
                     type: 'text',
                     text: `메타 명령어 실행 중 오류 발생: ${errorMessage}`
-                }],
-            structuredContent: {
-                success: false,
-                result: '',
-                error: errorMessage
-            }
+                }]
         };
     }
 }
@@ -270,7 +262,6 @@ async function handlePragmaCommand(dbManager, dbPath, target) {
  * 메타 명령어 실행 함수 (MCP 서버에서 직접 호출용)
  */
 export async function executeMetaCommand(params) {
-    const result = await metaCommandHandler(params);
-    return result.structuredContent;
+    return await metaCommandHandler(params);
 }
 //# sourceMappingURL=metaCommands.js.map
