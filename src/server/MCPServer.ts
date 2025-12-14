@@ -291,6 +291,11 @@ export class SQLiteMCPServer {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error('SQLite MCP 서버가 시작되었습니다');
+
+    // 서버가 무한 대기 상태를 유지하도록 함
+    return new Promise(() => {
+      // 이 Promise는 절대 resolve되지 않아 서버가 계속 실행됨
+    });
   }
 
   /**
