@@ -28,23 +28,23 @@
     - 오류 처리 및 분류
     - _Requirements: 2.3, 4.4, 8.3_
 
-- [ ] 3. Create 작업 도구 구현
-  - [ ] 3.1 테이블 생성 도구 구현
+- [x] 3. Create 작업 도구 구현
+  - [x] 3.1 테이블 생성 도구 구현
     - CREATE TABLE SQL 생성 및 실행
     - 스키마 검증 로직
     - _Requirements: 2.1_
 
-  - [ ] 3.2 Property test for table creation consistency
+  - [x] 3.2 Property test for table creation consistency
     - **Property 3: 테이블 생성 일관성**
     - **Validates: Requirements 2.1**
 
-  - [ ] 3.3 데이터 삽입 도구 구현
+  - [x] 3.3 데이터 삽입 도구 구현
     - INSERT SQL 생성 및 실행
     - 데이터 타입 변환 처리
     - 삽입된 행 ID 반환
     - _Requirements: 2.2, 2.4_
 
-  - [ ] 3.4 Property test for data insertion round-trip
+  - [x] 3.4 Property test for data insertion round-trip
     - **Property 4: 데이터 삽입 라운드트립**
     - **Validates: Requirements 2.2, 2.4**
 

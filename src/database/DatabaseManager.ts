@@ -82,7 +82,8 @@ export class DatabaseManager implements IDatabaseManager {
       const stmt = database.connection.prepare(sql);
 
       // 쿼리 타입에 따른 실행
-      if (sql.trim().toLowerCase().startsWith('select')) {
+      const sqlLower = sql.trim().toLowerCase();
+      if (sqlLower.startsWith('select') || sqlLower.startsWith('pragma')) {
         const rows = stmt.all(...params);
         return {
           success: true,
