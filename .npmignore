@@ -1,0 +1,35 @@
+# 테스트 파일
+*.test.ts
+*.test.js
+**/*.test.ts
+**/*.test.js
+
+# 개발 파일
+.kiro/
+test-dbs/
+src/
+
+# 빌드 도구
+tsconfig.json
+jest.config.js
+jest.setup.js
+
+# 문서
+README.md
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+*.swp
+*.swo
+
+# 로그
+*.log
+npm-debug.log*
+
+# 캐시
+.npm
+node_modules/.cache
