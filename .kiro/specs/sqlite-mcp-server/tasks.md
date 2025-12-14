@@ -80,29 +80,29 @@
     - **Property 6: UPDATE 작업 정확성**
     - **Validates: Requirements 4.1, 4.2**
 
-- [ ] 6. Delete 작업 도구 구현
-  - [ ] 6.1 DELETE 쿼리 도구 구현
+- [x] 6. Delete 작업 도구 구현
+  - [x] 6.1 DELETE 쿼리 도구 구현
     - DELETE SQL 생성 및 실행
     - 삭제된 행 수 반환
     - 조건부 및 전체 삭제 처리
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
-  - [ ] 6.2 Property test for DELETE operation accuracy
+  - [x] 6.2 Property test for DELETE operation accuracy
     - **Property 7: DELETE 작업 정확성**
     - **Validates: Requirements 5.1, 5.2**
 
-- [ ] 7. SQLite 메타 명령 도구 구현
-  - [ ] 7.1 메타 명령 처리기 구현
+- [x] 7. SQLite 메타 명령 도구 구현
+  - [x] 7.1 메타 명령 처리기 구현
     - .tables, .schema, .indexes, .pragma 명령 처리
     - SQLite 시스템 테이블 쿼리
     - 명령별 결과 형식 처리
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-  - [ ] 7.2 Property test for meta command execution
+  - [x] 7.2 Property test for meta command execution
     - **Property 9: 메타 명령 실행**
     - **Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5**
 
-- [ ] 8. 첫 번째 체크포인트
+- [x] 8. 첫 번째 체크포인트
   - 모든 테스트가 통과하는지 확인하고, 질문이 있으면 사용자에게 문의
 
 - [ ] 9. MCP 서버 구현

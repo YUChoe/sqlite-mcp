@@ -13,6 +13,12 @@ export { getSchemaTool } from './getSchema';
 // Update 작업 도구
 export { updateDataTool } from './updateData';
 
+// Delete 작업 도구
+export { deleteDataTool } from './deleteData';
+
+// Meta 명령 도구
+export { metaCommandsTool } from './metaCommands';
+
 // 모든 Create 도구를 배열로 내보내기
 export const createTools = [
   createTableTool,
@@ -28,4 +34,14 @@ export const readTools = [
 // 모든 Update 도구를 배열로 내보내기
 export const updateTools = [
   updateDataTool
+];
+
+// 모든 Delete 도구를 배열로 내보내기
+export const deleteTools = [
+  deleteDataTool
+];
+
+// 모든 Meta 명령 도구를 배열로 내보내기
+export const metaTools = [
+  metaCommandsTool
 ];
