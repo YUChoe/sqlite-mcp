@@ -48,24 +48,24 @@
     - **Property 4: 데이터 삽입 라운드트립**
     - **Validates: Requirements 2.2, 2.4**
 
-- [ ] 4. Read 작업 도구 구현
-  - [ ] 4.1 SELECT 쿼리 도구 구현
+- [x] 4. Read 작업 도구 구현
+  - [x] 4.1 SELECT 쿼리 도구 구현
     - SELECT SQL 실행 및 결과 처리
     - JSON 형태 결과 반환
     - WHERE 절 처리
     - _Requirements: 3.1, 3.2, 3.4_
 
-  - [ ] 4.2 Property test for SELECT query result format
+  - [x] 4.2 Property test for SELECT query result format
     - **Property 5: SELECT 쿼리 결과 형식**
     - **Validates: Requirements 3.1, 3.2**
 
-  - [ ] 4.3 스키마 정보 조회 도구 구현
+  - [x] 4.3 스키마 정보 조회 도구 구현
     - 테이블 목록 조회
     - 테이블 스키마 정보 조회
     - 컬럼 정보 및 데이터 타입 반환
     - _Requirements: 6.1, 6.2, 6.4_
 
-  - [ ] 4.4 Property test for schema information accuracy
+  - [x] 4.4 Property test for schema information accuracy
     - **Property 8: 스키마 정보 정확성**
     - **Validates: Requirements 6.1, 6.2**
 
