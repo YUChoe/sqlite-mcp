@@ -3,10 +3,10 @@
  * SQLite 데이터베이스의 테이블 목록과 스키마 정보를 조회하는 기능을 제공합니다.
  */
 
-import { DatabaseManager } from '../database/DatabaseManager';
-import { GetSchemaSchema, SchemaResultSchema } from '../types/schemas';
-import type { GetSchemaInput, SchemaResultOutput } from '../types/schemas';
-import type { ToolDefinition, ToolResult } from '../types/index';
+import { DatabaseManager } from '../database/DatabaseManager.js';
+import { GetSchemaSchema, SchemaResultSchema } from '../types/schemas.js';
+import type { GetSchemaInput, SchemaResultOutput } from '../types/schemas.js';
+import type { ToolDefinition, ToolResult } from '../types/index.js';
 
 /**
  * 스키마 정보 조회 도구

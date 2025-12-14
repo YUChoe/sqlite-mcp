@@ -3,10 +3,10 @@
  * SQLite 데이터베이스에서 데이터를 조회하는 기능을 제공합니다.
  */
 
-import { DatabaseManager } from '../database/DatabaseManager';
-import { SelectDataSchema, QueryResultSchema } from '../types/schemas';
-import type { SelectDataInput, QueryResultOutput } from '../types/schemas';
-import type { ToolDefinition, ToolResult } from '../types/index';
+import { DatabaseManager } from '../database/DatabaseManager.js';
+import { SelectDataSchema, QueryResultSchema } from '../types/schemas.js';
+import type { SelectDataInput, QueryResultOutput } from '../types/schemas.js';
+import type { ToolDefinition, ToolResult } from '../types/index.js';
 
 /**
  * SELECT 쿼리 실행 도구

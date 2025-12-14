@@ -3,30 +3,30 @@
  */
 
 // Create 작업 도구
-import { createTableTool } from './createTable';
-import { insertDataTool } from './insertData';
+import { createTableTool } from './createTable.js';
+import { insertDataTool } from './insertData.js';
 
 // Read 작업 도구
-import { selectDataTool } from './selectData';
-import { getSchemaTool } from './getSchema';
+import { selectDataTool } from './selectData.js';
+import { getSchemaTool } from './getSchema.js';
 
 // Update 작업 도구
-import { updateDataTool } from './updateData';
+import { updateDataTool } from './updateData.js';
 
 // Delete 작업 도구
-import { deleteDataTool } from './deleteData';
+import { deleteDataTool } from './deleteData.js';
 
 // Meta 명령 도구
-import { metaCommandsTool } from './metaCommands';
+import { metaCommandsTool } from './metaCommands.js';
 
 // 개별 도구 export
-export { createTableTool } from './createTable';
-export { insertDataTool } from './insertData';
-export { selectDataTool } from './selectData';
-export { getSchemaTool } from './getSchema';
-export { updateDataTool } from './updateData';
-export { deleteDataTool } from './deleteData';
-export { metaCommandsTool } from './metaCommands';
+export { createTableTool } from './createTable.js';
+export { insertDataTool } from './insertData.js';
+export { selectDataTool } from './selectData.js';
+export { getSchemaTool } from './getSchema.js';
+export { updateDataTool } from './updateData.js';
+export { deleteDataTool } from './deleteData.js';
+export { metaCommandsTool } from './metaCommands.js';
 
 // 모든 Create 도구를 배열로 내보내기
 export const createTools = [

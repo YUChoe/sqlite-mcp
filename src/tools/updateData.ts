@@ -3,10 +3,10 @@
  * UPDATE SQL을 실행하고 영향받은 행 수를 반환합니다.
  */
 
-import { DatabaseManager } from '../database/DatabaseManager';
-import { UpdateDataSchema, QueryResultSchema } from '../types/schemas';
-import type { UpdateDataInput, QueryResultOutput } from '../types/schemas';
-import type { ToolDefinition, ToolResult } from '../types/index';
+import { DatabaseManager } from '../database/DatabaseManager.js';
+import { UpdateDataSchema, QueryResultSchema } from '../types/schemas.js';
+import type { UpdateDataInput, QueryResultOutput } from '../types/schemas.js';
+import type { ToolDefinition, ToolResult } from '../types/index.js';
 
 /**
  * 데이터 업데이트 도구 정의

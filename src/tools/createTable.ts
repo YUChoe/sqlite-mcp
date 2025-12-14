@@ -3,10 +3,10 @@
  * CREATE TABLE SQL을 생성하고 실행합니다.
  */
 
-import { DatabaseManager } from '../database/DatabaseManager';
-import { CreateTableSchema, QueryResultSchema } from '../types/schemas';
-import type { CreateTableInput, QueryResultOutput } from '../types/schemas';
-import type { ToolDefinition, ToolResult } from '../types/index';
+import { DatabaseManager } from '../database/DatabaseManager.js';
+import { CreateTableSchema, QueryResultSchema } from '../types/schemas.js';
+import type { CreateTableInput, QueryResultOutput } from '../types/schemas.js';
+import type { ToolDefinition, ToolResult } from '../types/index.js';
 
 /**
  * 테이블 생성 도구 정의

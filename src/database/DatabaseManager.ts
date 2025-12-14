@@ -14,7 +14,7 @@ import {
   Operation,
   DatabaseErrorType,
   SQLErrorType
-} from '../types/index';
+} from '../types/index.js';
 
 /**
  * SQLite 데이터베이스 매니저 구현

@@ -3,10 +3,10 @@
  * .tables, .schema, .indexes, .pragma 등의 SQLite 메타 명령을 처리합니다.
  */
 
-import { DatabaseManager } from '../database/DatabaseManager';
-import { MetaCommandSchema, MetaResultSchema } from '../types/schemas';
-import type { MetaCommandInput, MetaResultOutput } from '../types/schemas';
-import type { ToolDefinition, ToolResult } from '../types/index';
+import { DatabaseManager } from '../database/DatabaseManager.js';
+import { MetaCommandSchema, MetaResultSchema } from '../types/schemas.js';
+import type { MetaCommandInput, MetaResultOutput } from '../types/schemas.js';
+import type { ToolDefinition, ToolResult } from '../types/index.js';
 
 /**
  * SQLite 메타 명령 도구

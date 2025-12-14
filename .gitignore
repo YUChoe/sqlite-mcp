@@ -5,7 +5,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Build outputs
-dist/
+# dist/ - 주석 처리하여 dist 디렉토리를 Git에 포함
 build/
 *.tsbuildinfo
 

@@ -3,10 +3,10 @@
  * INSERT SQL을 생성하고 실행합니다.
  */
 
-import { DatabaseManager } from '../database/DatabaseManager';
-import { InsertDataSchema, QueryResultSchema } from '../types/schemas';
-import type { InsertDataInput, QueryResultOutput } from '../types/schemas';
-import type { ToolDefinition, ToolResult } from '../types/index';
+import { DatabaseManager } from '../database/DatabaseManager.js';
+import { InsertDataSchema, QueryResultSchema } from '../types/schemas.js';
+import type { InsertDataInput, QueryResultOutput } from '../types/schemas.js';
+import type { ToolDefinition, ToolResult } from '../types/index.js';
 
 /**
  * 데이터 삽입 도구 정의

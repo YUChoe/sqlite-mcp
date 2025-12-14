@@ -3,10 +3,10 @@
  * DELETE SQL을 실행하고 삭제된 행 수를 반환합니다.
  */
 
-import { DatabaseManager } from '../database/DatabaseManager';
-import { DeleteDataSchema, QueryResultSchema } from '../types/schemas';
-import type { DeleteDataInput, QueryResultOutput } from '../types/schemas';
-import type { ToolDefinition, ToolResult } from '../types/index';
+import { DatabaseManager } from '../database/DatabaseManager.js';
+import { DeleteDataSchema, QueryResultSchema } from '../types/schemas.js';
+import type { DeleteDataInput, QueryResultOutput } from '../types/schemas.js';
+import type { ToolDefinition, ToolResult } from '../types/index.js';
 
 /**
  * 데이터 삭제 도구 정의
