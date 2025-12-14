@@ -69,14 +69,14 @@
     - **Property 8: 스키마 정보 정확성**
     - **Validates: Requirements 6.1, 6.2**
 
-- [ ] 5. Update 작업 도구 구현
-  - [ ] 5.1 UPDATE 쿼리 도구 구현
+- [x] 5. Update 작업 도구 구현
+  - [x] 5.1 UPDATE 쿼리 도구 구현
     - UPDATE SQL 생성 및 실행
     - 영향받은 행 수 반환
     - 조건부 업데이트 처리
     - _Requirements: 4.1, 4.2, 4.3_
 
-  - [ ] 5.2 Property test for UPDATE operation accuracy
+  - [x] 5.2 Property test for UPDATE operation accuracy
     - **Property 6: UPDATE 작업 정확성**
     - **Validates: Requirements 4.1, 4.2**
 

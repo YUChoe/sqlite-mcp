@@ -10,6 +10,9 @@ export { insertDataTool } from './insertData';
 export { selectDataTool } from './selectData';
 export { getSchemaTool } from './getSchema';
 
+// Update 작업 도구
+export { updateDataTool } from './updateData';
+
 // 모든 Create 도구를 배열로 내보내기
 export const createTools = [
   createTableTool,
@@ -20,4 +23,9 @@ export const createTools = [
 export const readTools = [
   selectDataTool,
   getSchemaTool
+];
+
+// 모든 Update 도구를 배열로 내보내기
+export const updateTools = [
+  updateDataTool
 ];
