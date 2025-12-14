@@ -5,7 +5,12 @@
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  InitializeRequestSchema,
+  InitializedNotificationSchema
+} from '@modelcontextprotocol/sdk/types.js';
 
 // 도구 임포트
 import {
@@ -56,6 +61,25 @@ export class SQLiteMCPServer {
    * 도구 핸들러 설정
    */
   private setupToolHandlers(): void {
+    // 초기화 핸들러
+    this.server.setRequestHandler(InitializeRequestSchema, async () => {
+      return {
+        protocolVersion: "2024-11-05",
+        capabilities: {
+          tools: { listChanged: true }
+        },
+        serverInfo: {
+          name: "sqlite-mcp",
+          version: "1.0.0"
+        }
+      };
+    });
+
+    // 초기화 완료 알림 핸들러
+    this.server.setNotificationHandler(InitializedNotificationSchema, async () => {
+      // 초기화 완료 처리 (필요시)
+    });
+
     // 사용 가능한 도구 목록 반환
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
