@@ -7,22 +7,22 @@
   - 핵심 타입 인터페이스 정의 (DatabaseManager, ToolDefinition, QueryResult 등)
   - _Requirements: 1.1, 8.1_
 
-- [ ] 2. Database Manager 구현
-  - [ ] 2.1 Database Manager 클래스 구현
+- [x] 2. Database Manager 구현
+  - [x] 2.1 Database Manager 클래스 구현
     - 데이터베이스 연결 관리 로직 작성
     - 연결 캐싱 및 정리 메커니즘 구현
     - 경로 검증 및 보안 처리
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-  - [ ] 2.2 Property test for database connection handling
+  - [x] 2.2 Property test for database connection handling
     - **Property 1: 데이터베이스 연결 처리**
     - **Validates: Requirements 1.1, 1.2, 1.3**
 
-  - [ ] 2.3 Property test for concurrent database processing
+  - [x] 2.3 Property test for concurrent database processing
     - **Property 2: 동시 데이터베이스 처리**
     - **Validates: Requirements 1.4**
 
-  - [ ] 2.4 SQL 쿼리 실행 유틸리티 구현
+  - [x] 2.4 SQL 쿼리 실행 유틸리티 구현
     - 매개변수화된 쿼리 실행 함수
     - 트랜잭션 처리 로직
     - 오류 처리 및 분류

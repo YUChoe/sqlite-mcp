@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod';
-import type { Database as SQLite3Database } from 'sqlite3';
+import type { Database as BetterSQLite3Database } from 'better-sqlite3';
 
 // ============================================================================
 // Database Manager 관련 타입
@@ -15,8 +15,8 @@ import type { Database as SQLite3Database } from 'sqlite3';
 export interface Database {
   /** 데이터베이스 파일 경로 */
   path: string;
-  /** sqlite3 데이터베이스 연결 */
-  connection: SQLite3Database;
+  /** better-sqlite3 데이터베이스 연결 */
+  connection: BetterSQLite3Database;
   /** 마지막 접근 시간 */
   lastAccessed: Date;
 }
